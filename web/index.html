@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONITOR_MACETA_v0.9b</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="terminal-container">
+    <h1>SIS_MONITOR_MACETA // EN_LINEA</h1>
+    
+    <div class="linea-dato">
+        <label>> SELECCIONAR_PLANTA:</label>
+        <select id="selPlanta">
+            <option value="monstera">MONSTERA_PRIME (ESTÁNDAR)</option>
+            <option value="cactus">CACTUS_DESIERTO (BAJA_H2O)</option>
+            <option value="helecho">HELECHO_HUMEDO (ALTA_H2O)</option>
+        </select>
+    </div>
+
+    <div class="grid-datos">
+        <div class="linea-dato">> HUMEDAD_SUELO... <span id="lblSuelo" class="valor-resaltado">--%</span></div>
+        <div class="linea-dato">> TEMP_AIRE........ <span id="lblTemp">--</span> °C</div>
+        <div class="linea-dato">> HUMEDAD_AIRE.... <span id="lblHumedad">--</span> %</div>
+    </div>
+
+    <div class="linea-dato" id="seccionAlerta">
+        > ESTADO_SIS: <span id="lblAlerta" style="color: #33ff33;">NOMINAL_OK</span>
+    </div>
+
+    <button class="btn-consola" id="btnActualizar">ejecutar_actualizacion.sh</button>
+    
+    <p style="font-size: 12pt; text-align: right; margin-top: 20px;" id="lblActualizado">
+        ULTIMA_SINC: DESCONOCIDA
+    </p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+/* --- ESTILO RETRO TERMINAL DE FÓSFORO VERDE --- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0f0d;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 18pt;
+    padding: 20px;
+    margin: 0;
+    text-shadow: 0 0 5px #33ff33;
+}
+
+/* Efecto tubo de rayos catódicos (CRT) y líneas de escaneo */
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 3px, 6px 100%;
+    pointer-events: none;
+}
+
+.terminal-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border: 3px solid #33ff33;
+    padding: 20px;
+    background-color: #050806;
+    box-shadow: 0 0 15px rgba(51, 255, 51, 0.4);
+}
+
+h1 {
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 0;
+    border-bottom: 2px dashed #33ff33;
+    padding-bottom: 10px;
+}
+
+.grid-datos {
+    margin: 20px 0;
+}
+
+.linea-dato {
+    display: block;
+    margin: 10px 0;
+}
+
+.valor-resaltado {
+    font-weight: bold;
+    background-color: #112211;
+    padding: 2px 10px;
+    border: 1px solid #33ff33;
+}
+
+.btn-consola {
+    background-color: #33ff33;
+    color: #0a0f0d;
+    border: 2px solid #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 16pt;
+    font-weight: bold;
+    padding: 5px 15px;
+    cursor: pointer;
+    width: 100%;
+    text-transform: uppercase;
+    margin-top: 15px;
+}
+
+.btn-consola:hover {
+    background-color: #0a0f0d;
+    color: #33ff33;
+    box-shadow: 0 0 10px #33ff33;
+}
+
+select {
+    background: #0a0f0d;
+    color: #33ff33;
+    border: 1px solid #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 16pt;
+    text-shadow: 0 0 5px #33ff33;
+    padding: 3px;
+    width: 100%;
+}
+
+/* Animación para los estados de peligro */
+.alerta-critica {
+    color: #ff3333 !important;
+    text-shadow: 0 0 8px #ff3333 !important;
+    animation: parpadeo_crt 1s steps(2, start) infinite;
+}
+
+@keyframes parpadeo_crt { 
+    to { visibility: hidden; } 
+}
