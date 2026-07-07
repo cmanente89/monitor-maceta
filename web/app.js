@@ -1,7 +1,7 @@
 // --- CONFIGURACIÓN DE CREDENCIALES ---
 // Reemplazar con tus datos reales localmente. Para producción usaremos variables de entorno.
-const supabaseUrl = window.env?.SUPABASE_URL || 'TU_URL_DE_DESARROLLO_LOCAL';
-const supabaseKey = window.env?.SUPABASE_KEY || 'TU_KEY_DE_DESARROLLO_LOCAL';
+const supabaseUrl = "https://dszgiimsmtboczkndblg.supabase.co/rest/v1/";
+const supabaseKey = "sb_publishable_EiRKDJn1DV1E9tlBnSyXsA_MvAzPnx3";
 
 const perfilesPlantas = {
     cactus: { minSuelo: 15, maxTemp: 35 },
