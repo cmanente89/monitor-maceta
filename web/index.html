@@ -1,43 +1,70 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONITOR_MACETA_v0.9b</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONITOR_MACETA // TERMINAL</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="terminal-container">
-    <h1>SIS_MONITOR_MACETA // EN_LINEA</h1>
+  <div class="crt-container">
+    <div class="scanline"></div>
     
-    <div class="linea-dato">
-        <label>> SELECCIONAR_PLANTA:</label>
-        <select id="selPlanta">
-            <option value="monstera">MONSTERA_PRIME (ESTÁNDAR)</option>
-            <option value="cactus">CACTUS_DESIERTO (BAJA_H2O)</option>
-            <option value="helecho">HELECHO_HUMEDO (ALTA_H2O)</option>
-        </select>
-    </div>
+    <header>
+  <h1>> MONITOR_MACETA_V1.0</h1>
+  <div class="linea-estado">
+    <p>ESTADO_DEL_SISTEMA: <span id="estado-sistema">CONECTANDO...</span></p>
+    <button id="btn-recargar" title="Recargar datos">[↻ RECARGAR]</button>
+  </div>
+  
+  <!-- NAVEGACIÓN POR SOLAPAS -->
+  <nav class="pestanas-nav">
+    <button class="btn-pestana activa" data-tab="tab-actual">> LECTURA_ACTUAL</button>
+    <button class="btn-pestana" data-tab="tab-graficos">> TELEMETRIA_GRAFICOS</button>
+  </nav>
+</header>
 
-    <div class="grid-datos">
-        <div class="linea-dato">> HUMEDAD_SUELO... <span id="lblSuelo" class="valor-resaltado">--%</span></div>
-        <div class="linea-dato">> TEMP_AIRE........ <span id="lblTemp">--</span> °C</div>
-        <div class="linea-dato">> HUMEDAD_AIRE.... <span id="lblHumedad">--</span> %</div>
-    </div>
+    <main>
+      <!-- SOLAPA 1: DATOS ACTUALES -->
+      <section id="tab-actual" class="contenido-pestana activa">
+        <div class="panel-datos">
+          <p>> PLANTA: 
+            <select id="select-planta">
+              <option value="monstera">MONSTERA DELICIOSA</option>
+              <option value="cactus">CACTUS</option>
+              <option value="helecho">HELECHO</option>
+            </select>
+          </p>
+          <div class="metricas-grid">
+            <p>> HUMEDAD_SUELO: <span id="humedad-suelo" class="destacado">--</span>%</p>
+            <p>> TEMP_AMBIENTE: <span id="temp-ambiente">--</span>°C</p>
+            <p>> HUMEDAD_AIRE: <span id="humedad-aire">--</span>%</p>
+          </div>
+          <p>> ULTIMA_LECTURA: <span id="fecha-lectura">--</span></p>
+        </div>
+      </section>
 
-    <div class="linea-dato" id="seccionAlerta">
-        > ESTADO_SIS: <span id="lblAlerta" style="color: #33ff33;">NOMINAL_OK</span>
-    </div>
+      <!-- SOLAPA 2: GRÁFICOS MULTIVARIABLE -->
+      <section id="tab-graficos" class="contenido-pestana">
+        <div class="panel-grafico">
+          <p>> HISTORIAL_RECIENTE (ULTIMAS 10 MEDICIONES)</p>
+          <div class="leyenda-grafico">
+            <span class="leyenda-item verde">■ Hum. Suelo (%)</span>
+            <span class="leyenda-item cian">■ Hum. Aire (%)</span>
+            <span class="leyenda-item amarillo">■ Temp (°C)</span>
+          </div>
+          <div class="contenedor-canvas">
+            <canvas id="graficoMultivariable"></canvas>
+          </div>
+        </div>
+      </section>
 
-    <button class="btn-consola" id="btnActualizar">ejecutar_actualizacion.sh</button>
-    
-    <p style="font-size: 12pt; text-align: right; margin-top: 20px;" id="lblActualizado">
-        ULTIMA_SINC: DESCONOCIDA
-    </p>
-</div>
+      <!-- <button id="btn-actualizar">> EJECUTAR_ACTUALIZACION.SH</button> -->
+    </main>
+  </div>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

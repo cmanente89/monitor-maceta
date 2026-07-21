@@ -1,102 +1,233 @@
-/* --- ESTILO RETRO TERMINAL DE FÓSFORO VERDE --- */
+/* --- RESET Y ESTILOS GLOBALES RETRO --- */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background-color: #0a0f0d;
-    color: #33ff33;
-    font-family: 'VT323', monospace;
-    font-size: 18pt;
-    padding: 20px;
-    margin: 0;
-    text-shadow: 0 0 5px #33ff33;
+  background-color: #050505;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-/* Efecto tubo de rayos catódicos (CRT) y líneas de escaneo */
-body::before {
-    content: " ";
-    display: block;
-    position: fixed;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    z-index: 2;
-    background-size: 100% 3px, 6px 100%;
-    pointer-events: none;
+/* --- CONTENEDOR TIPO MONITOR CRT --- */
+.crt-container {
+  background-color: #0a0a0a;
+  border: 2px solid #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  padding: 25px;
+  position: relative;
+  border-radius: 4px;
 }
 
-.terminal-container {
-    max-width: 600px;
-    margin: 20px auto;
-    border: 3px solid #33ff33;
-    padding: 20px;
-    background-color: #050806;
-    box-shadow: 0 0 15px rgba(51, 255, 51, 0.4);
+/* Efecto de línea de escaneo CRT */
+.scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
 }
 
-h1 {
-    text-align: center;
-    text-transform: uppercase;
-    margin-top: 0;
-    border-bottom: 2px dashed #33ff33;
-    padding-bottom: 10px;
+/* --- ENCABEZADO Y NAVEGACIÓN --- */
+header h1 {
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  margin-bottom: 5px;
 }
 
-.grid-datos {
-    margin: 20px 0;
+header p {
+  margin-bottom: 15px;
 }
 
-.linea-dato {
-    display: block;
-    margin: 10px 0;
+.pestanas-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  border-bottom: 1px dashed #00ff00;
+  padding-bottom: 12px;
 }
 
-.valor-resaltado {
-    font-weight: bold;
-    background-color: #112211;
-    padding: 2px 10px;
-    border: 1px solid #33ff33;
+.btn-pestana {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn-consola {
-    background-color: #33ff33;
-    color: #0a0f0d;
-    border: 2px solid #33ff33;
-    font-family: 'VT323', monospace;
-    font-size: 16pt;
-    font-weight: bold;
-    padding: 5px 15px;
-    cursor: pointer;
-    width: 100%;
-    text-transform: uppercase;
-    margin-top: 15px;
+.btn-pestana.activa, .btn-pestana:hover {
+  background-color: #00ff00;
+  color: #000000;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
-.btn-consola:hover {
-    background-color: #0a0f0d;
-    color: #33ff33;
-    box-shadow: 0 0 10px #33ff33;
+/* --- CONTENIDO DE SOLAPAS --- */
+.contenido-pestana {
+  display: none;
+  padding: 20px 0;
 }
 
+.contenido-pestana.activa {
+  display: block;
+}
+
+/* --- SOLAPA 1: DATOS Y MÉTRICAS --- */
+.panel-datos p {
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.metricas-grid {
+  margin: 15px 0;
+  padding-left: 10px;
+  border-left: 2px solid #00ff00;
+}
+
+.destacado {
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
+}
+
+/* Estilo del Dropdown de Planta */
 select {
-    background: #0a0f0d;
-    color: #33ff33;
-    border: 1px solid #33ff33;
-    font-family: 'VT323', monospace;
-    font-size: 16pt;
-    text-shadow: 0 0 5px #33ff33;
-    padding: 3px;
-    width: 100%;
+  background-color: #000000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  padding: 3px 8px;
+  outline: none;
+  cursor: pointer;
 }
 
-/* Animación para los estados de peligro */
-.alerta-critica {
-    color: #ff3333 !important;
-    text-shadow: 0 0 8px #ff3333 !important;
-    animation: parpadeo_crt 1s steps(2, start) infinite;
+select option {
+  background-color: #0a0a0a;
+  color: #00ff00;
 }
 
-@keyframes parpadeo_crt { 
-    to { visibility: hidden; } 
+/* --- SOLAPA 2: TELEMETRÍA Y GRÁFICOS --- */
+.panel-grafico p {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.leyenda-grafico {
+  display: flex;
+  gap: 20px;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.leyenda-item.verde { color: #00ff00; }
+.leyenda-item.cian { color: #00ffff; }
+.leyenda-item.amarillo { color: #ffff00; }
+
+.contenedor-canvas {
+  position: relative;
+  height: 250px;
+  width: 100%;
+  margin-top: 10px;
+  background-color: #000000;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  padding: 10px;
+}
+
+/* --- BOTÓN DE ACCIÓN ACCIONAR --- */
+#btn-actualizar {
+  margin-top: 20px;
+  width: 100%;
+  background-color: #000000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#btn-actualizar:hover {
+  background-color: #00ff00;
+  color: #000000;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
+}
+
+/* --- ESTADO DE ALERTA RIEGO --- */
+body.alerta-emergencia {
+  background-color: #1a0000;
+  color: #ff3333;
+}
+
+body.alerta-emergencia .crt-container {
+  border-color: #ff3333;
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+}
+
+body.alerta-emergencia select,
+body.alerta-emergencia #btn-actualizar,
+body.alerta-emergencia .btn-pestana {
+  color: #ff3333;
+  border-color: #ff3333;
+}
+
+body.alerta-emergencia .btn-pestana.activa {
+  background-color: #ff3333;
+  color: #000000;
+}
+
+/* Alineación de la línea de estado y el botón discreto */
+.linea-estado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#btn-recargar {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#btn-recargar:hover {
+  background-color: #00ff00;
+  color: #000000;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+/* Estado de alerta en el botón discreto */
+body.alerta-emergencia #btn-recargar {
+  color: #ff3333;
+  border-color: #ff3333;
+}
+
+body.alerta-emergencia #btn-recargar:hover {
+  background-color: #ff3333;
+  color: #000000;
 }
