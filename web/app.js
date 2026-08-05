@@ -1,10 +1,10 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-// 1. Declaramos las credenciales directamente (Son públicas y seguras en Supabase)
-const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co/rest/v1/mediciones";
+// 1. La URL Base de Supabase (SIN el /rest/v1/mediciones al final)
+const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
 const SUPABASE_KEY = "ssb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB"; // Tu clave anon de Supabase
 
-// 2. Inicializamos el cliente de Supabase (si usás la librería cdn)
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// 2. Inicializamos la ruta directa al Endpoint de la tabla "mediciones"
+const ENDPOINT_MEDICIONES = `${SUPABASE_URL}/rest/v1/mediciones`;
 
 let graficoChart = null;
 
@@ -31,7 +31,8 @@ async function obtenerMediciones() {
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    const respuesta = await fetch(`${SUPABASE_URL}?select=*&order=fecha_hora.desc&limit=10`, {
+    // Usamos ENDPOINT_MEDICIONES en lugar de SUPABASE_URL
+    const respuesta = await fetch(`${ENDPOINT_MEDICIONES}?select=*&order=fecha_hora.desc&limit=10`, {
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
