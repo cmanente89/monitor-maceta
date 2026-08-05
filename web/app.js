@@ -1,9 +1,10 @@
-// --- CONFIGURACIÓN DE SUPABASE ---
+JavaScript
+// --- CONFIGURACIÓN DE SUPABASE CON CLIENTE NATIVO ---
 const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB";
 
-// Inicializamos la conexión usando la librería oficial
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Inicializamos el cliente oficial de Supabase
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
 
@@ -30,56 +31,44 @@ async function obtenerMediciones() {
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    // Apuntamos con la sintaxis exacta de PostgREST utilizando la columna fecha_hora
-    const urlConsulta = `${ENDPOINT_MEDICIONES}?select=*&order=fecha_hora.desc&limit=10`;
-    
-    const respuesta = await fetch(urlConsulta, {
-      method: "GET",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      }
-    });
+    // Consulta limpia usando el SDK oficial de Supabase
+    const { data: datos, error } = await supabaseClient
+      .from('mediciones')
+      .select('*')
+      .order('fecha_hora', { ascending: false })
+      .limit(10);
 
-    if (!respuesta.ok) {
-      // Si la API devuelve un error 400, leemos el mensaje exacto de Supabase
-      const errorJson = await respuesta.json().catch(() => ({}));
-      console.error("Respuesta de error de Supabase:", errorJson);
-      throw new Error(`Error HTTP ${respuesta.status}: ${JSON.stringify(errorJson)}`);
+    if (error) {
+      console.error("Error devuelto por el SDK de Supabase:", error);
+      estadoEl.textContent = "ERROR_SUPABASE";
+      return;
     }
-
-    const datos = await respuesta.json();
 
     if (!datos || datos.length === 0) {
       estadoEl.textContent = "NO_HAY_DATOS";
       return;
     }
 
-    // Como pedimos desc (descendente), la primera posición (índice 0) es el registro más reciente
+    // Como ordenamos descendente, el índice 0 es el más reciente
     const ultima = datos[0]; 
     
-    // 1. Cargar lecturas actuales
+    // Solapa 1: Lecturas actuales
     document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
     document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
     document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
     
-    // Parsear la fecha usando la columna fecha_hora de tu tabla
     if (ultima.fecha_hora) {
       const fecha = new Date(ultima.fecha_hora);
       document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
-    } else {
-      document.getElementById('fecha-lectura').textContent = '--';
     }
 
     evaluarEstadoPlanta(ultima.humedad_suelo);
 
-    // 2. Para el gráfico invertimos el arreglo para que quede orden de menor a mayor tiempo (de izquierda a derecha)
+    // Solapa 2: Gráfico (invertimos para mostrar cronológicamente de izquierda a derecha)
     renderizarGraficoMultivariable(datos.slice().reverse());
 
-  } catch (error) {
-    console.error("Error en obtenerMediciones:", error);
+  } catch (err) {
+    console.error("Error inesperado:", err);
     estadoEl.textContent = "ERROR_DE_CONEXION";
   }
 }
@@ -105,7 +94,7 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   const ctx = document.getElementById('graficoMultivariable').getContext('2d');
 
   const etiquetasHoras = datosHistoricos.map(d => {
-    const f = new Date(d.created_at || d.fecha_hora || new Date());
+    const f = new Date(d.fecha_hora);
     return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
   });
 
@@ -173,7 +162,7 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   });
 }
 
-// --- EVENT LISTENERS Y EVENTOS INICIALES ---
+// --- EVENTOS INICIALES ---
 document.getElementById('select-planta').addEventListener('change', () => {
   const humedadActual = parseInt(document.getElementById('humedad-suelo').textContent);
   if (!isNaN(humedadActual)) evaluarEstadoPlanta(humedadActual);
@@ -184,5 +173,5 @@ document.getElementById('btn-recargar').addEventListener('click', obtenerMedicio
 // Carga inicial
 obtenerMediciones();
 
-// Polling cada 60s
+// Polling automático
 setInterval(obtenerMediciones, 60000);
