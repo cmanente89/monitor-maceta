@@ -5,14 +5,11 @@
 #include "DHT.h"
 #include "secrets.h"
 
-// --- CONFIGURACIÓN DE TU WI-FI ---
-const char* ssid = " ";
-const char* password = " ";
-
-// --- CONFIGURACIÓN DE SUPABASE ---
-// Tu URL debe terminar en "/rest/v1/mediciones" para apuntar directo a tu tabla
-const char* supabase_url = " ";
-const char* supabase_api_key = " ";
+// --- VINCULACIÓN CON SECRETS.H ---
+const char* ssid = SECRET_SSID;
+const char* password = SECRET_PASS;
+const char* supabase_url = SUPABASE_URL;
+const char* supabase_api_key = SUPABASE_KEY;
 
 // --- CONFIGURACIÓN DE PINES ---
 #define DHTPIN 23
@@ -20,9 +17,10 @@ const char* supabase_api_key = " ";
 DHT dht(DHTPIN, DHTTYPE);
 
 const int pinSuelo = 36; // Usamos el pin VP (GPIO 36)
-// Calibración de tu sensor de suelo (ajustá estos valores si es necesario)
-const int valorSeco = 2600;  // Tu lectura promedio al aire (~2590-2620)
-const int valorHumedo = 1000; // Tu lectura promedio en agua (~993-1022)
+
+// Calibración de tu sensor de suelo
+const int valorSeco = 2600;  // Lectura promedio al aire
+const int valorHumedo = 1000; // Lectura promedio en agua
 
 void setup() {
   Serial.begin(115200);
@@ -51,10 +49,10 @@ void loop() {
     float h_aire = dht.readHumidity();
     int lecturaSuelo = analogRead(pinSuelo);
     
-    // ⚠️ IMPRIMIR VALOR CRUDO EN CONSOLA PARA CALIBRACIÓN
+    // IMPRIMIR VALOR CRUDO EN CONSOLA PARA CALIBRACIÓN
     Serial.printf("\n[CALIBRACIÓN] -> Valor crudo analogRead(pinSuelo): %d\n", lecturaSuelo);
 
-    // Convertir la lectura del suelo a porcentaje (usando los límites actuales)
+    // Convertir la lectura del suelo a porcentaje
     int h_suelo = map(lecturaSuelo, valorSeco, valorHumedo, 0, 100);
     h_suelo = constrain(h_suelo, 0, 100); 
 
@@ -100,12 +98,8 @@ void loop() {
     Serial.println("Error: Se perdió la conexión Wi-Fi");
   }
 
-  // --- CONFIGURACIÓN DEL TIEMPO ENTRE LECTURAS ---
-  // Mientras se calibrausar 5000 (5 segundos) para ver los cambios rápido.
-  // al terminar, lo cambiamos a 15 minutos: delay(15 * 60 * 1000);
- // delay(5000); 
- // --- ESPERA ENTRE LECTURAS ---
-  // 15 minutos = 15 min * 60 seg * 1000 ms = 900.000 ms
-  Serial.println("\nEsperando 15 minutos para la próxima lectura...");
-  delay(15 * 60 * 1000);
+  // --- ESPERA ENTRE LECTURAS (TEMPORAL PARA DEMO: 1 MINUTO) ---
+  // 1 minuto = 60 * 1000 ms = 60.000 ms
+  Serial.println("\nEsperando 1 minuto para la próxima lectura...");
+  delay(60 * 1000);
 }
