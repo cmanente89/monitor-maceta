@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co/rest/v1/mediciones";
-const SUPABASE_KEY = "sb_publishable_EiRKDJn1DV1E9tlBnSyXsA_MvAzPnx3"; 
+const SUPABASE_URL = " ";
+const SUPABASE_KEY = " "; 
 
 let graficoChart = null;
 

@@ -6,13 +6,13 @@
 #include "secrets.h"
 
 // --- CONFIGURACIÓN DE TU WI-FI ---
-const char* ssid = "Manente";
-const char* password = "6453man6455";
+const char* ssid = " ";
+const char* password = " ";
 
 // --- CONFIGURACIÓN DE SUPABASE ---
 // Tu URL debe terminar en "/rest/v1/mediciones" para apuntar directo a tu tabla
-const char* supabase_url = "https://dszgiimsmtboczkndblg.supabase.co/rest/v1/mediciones";
-const char* supabase_api_key = "sb_publishable_EiRKDJn1DV1E9tlBnSyXsA_MvAzPnx3";
+const char* supabase_url = " ";
+const char* supabase_api_key = " ";
 
 // --- CONFIGURACIÓN DE PINES ---
 #define DHTPIN 23
@@ -101,8 +101,8 @@ void loop() {
   }
 
   // --- CONFIGURACIÓN DEL TIEMPO ENTRE LECTURAS ---
-  // Mientras estés calibrando, usá 5000 (5 segundos) para ver los cambios rápido.
-  // Cuando termines la calibración, lo cambiamos a 15 minutos: delay(15 * 60 * 1000);
+  // Mientras se calibrausar 5000 (5 segundos) para ver los cambios rápido.
+  // al terminar, lo cambiamos a 15 minutos: delay(15 * 60 * 1000);
  // delay(5000); 
  // --- ESPERA ENTRE LECTURAS ---
   // 15 minutos = 15 min * 60 seg * 1000 ms = 900.000 ms
