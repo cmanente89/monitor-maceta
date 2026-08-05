@@ -13,18 +13,18 @@
     <div class="scanline"></div>
     
     <header>
-  <h1>> MONITOR_MACETA_V1.0</h1>
-  <div class="linea-estado">
-    <p>ESTADO_DEL_SISTEMA: <span id="estado-sistema">CONECTANDO...</span></p>
-    <button id="btn-recargar" title="Recargar datos">[↻ RECARGAR]</button>
-  </div>
-  
-  <!-- NAVEGACIÓN POR SOLAPAS -->
-  <nav class="pestanas-nav">
-    <button class="btn-pestana activa" data-tab="tab-actual">> LECTURA_ACTUAL</button>
-    <button class="btn-pestana" data-tab="tab-graficos">> TELEMETRIA_GRAFICOS</button>
-  </nav>
-</header>
+      <h1>> MONITOR_MACETA_V1.0</h1>
+      <div class="linea-estado">
+        <p>ESTADO_DEL_SISTEMA: <span id="estado-sistema">CONECTANDO...</span></p>
+        <button id="btn-recargar" title="Recargar datos">[↻ RECARGAR]</button>
+      </div>
+      
+      <!-- NAVEGACIÓN POR SOLAPAS -->
+      <nav class="pestanas-nav">
+        <button class="btn-pestana activa" data-tab="tab-actual">> LECTURA_ACTUAL</button>
+        <button class="btn-pestana" data-tab="tab-graficos">> TELEMETRIA_GRAFICOS</button>
+      </nav>
+    </header>
 
     <main>
       <!-- SOLAPA 1: DATOS ACTUALES -->
@@ -60,12 +60,12 @@
           </div>
         </div>
       </section>
-
-      <!-- <button id="btn-actualizar">> EJECUTAR_ACTUALIZACION.SH</button> -->
     </main>
   </div>
 
+  <!-- CDN OFICIAL DE SUPABASE JS (OBLIGATORIO Y ÚNICO DEPENDIENTE) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- TU CÓDIGO JS PRINCIPAL -->
   <script src="app.js"></script>
 </body>
 </html>

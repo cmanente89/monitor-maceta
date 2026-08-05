@@ -1,10 +1,11 @@
-JavaScript
-// --- CONFIGURACIÓN DE SUPABASE CON CLIENTE NATIVO ---
+// ==========================================
+// CONFIGURACIÓN DE CREDENCIALES DE SUPABASE
+// ==========================================
 const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB";
 
-// Inicializamos el cliente oficial de Supabase
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Inicializamos la conexión con el SDK Oficial
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
 
@@ -14,7 +15,9 @@ const PLANTAS = {
   helecho:  { minHumedad: 60, maxHumedad: 90 }
 };
 
-// --- GESTIÓN DE PESTAÑAS (SOLAPAS) ---
+// ==========================================
+// GESTIÓN DE SOLAPAS (PESTAÑAS)
+// ==========================================
 document.querySelectorAll('.btn-pestana').forEach(boton => {
   boton.addEventListener('click', () => {
     document.querySelectorAll('.btn-pestana').forEach(b => b.classList.remove('activa'));
@@ -26,21 +29,25 @@ document.querySelectorAll('.btn-pestana').forEach(boton => {
   });
 });
 
+// ==========================================
+// CONSULTA PRINCIPAL A SUPABASE
+// ==========================================
 async function obtenerMediciones() {
   const estadoEl = document.getElementById('estado-sistema');
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    // Consulta limpia usando el SDK oficial de Supabase
-    const { data: datos, error } = await supabaseClient
+    // Consulta limpia usando las columnas exactas observadas en la BD:
+    // 'fecha_hora', 'humedad_suelo', 'temperatura_aire', 'humedad_aire'
+    const { data: datos, error } = await db
       .from('mediciones')
-      .select('*')
+      .select('id, fecha_hora, humedad_suelo, temperatura_aire, humedad_aire')
       .order('fecha_hora', { ascending: false })
       .limit(10);
 
     if (error) {
-      console.error("Error devuelto por el SDK de Supabase:", error);
-      estadoEl.textContent = "ERROR_SUPABASE";
+      console.error("Error retornado por Supabase SDK:", error);
+      estadoEl.textContent = "ERROR_BD: " + error.message;
       return;
     }
 
@@ -49,10 +56,10 @@ async function obtenerMediciones() {
       return;
     }
 
-    // Como ordenamos descendente, el índice 0 es el más reciente
+    // El primer elemento [0] es la última lectura registrada
     const ultima = datos[0]; 
     
-    // Solapa 1: Lecturas actuales
+    // 1. Actualizar interfaz de lectura actual
     document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
     document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
     document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
@@ -60,19 +67,24 @@ async function obtenerMediciones() {
     if (ultima.fecha_hora) {
       const fecha = new Date(ultima.fecha_hora);
       document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
+    } else {
+      document.getElementById('fecha-lectura').textContent = '--';
     }
 
     evaluarEstadoPlanta(ultima.humedad_suelo);
 
-    // Solapa 2: Gráfico (invertimos para mostrar cronológicamente de izquierda a derecha)
+    // 2. Renderizar gráfico (invertimos el array para orden cronológico de izq a der)
     renderizarGraficoMultivariable(datos.slice().reverse());
 
   } catch (err) {
-    console.error("Error inesperado:", err);
-    estadoEl.textContent = "ERROR_DE_CONEXION";
+    console.error("Error inesperado en app.js:", err);
+    estadoEl.textContent = "ERROR_SISTEMA";
   }
 }
 
+// ==========================================
+// LÓGICA DE ALERTA DE PLANTAS
+// ==========================================
 function evaluarEstadoPlanta(humedadActual) {
   const tipoPlanta = document.getElementById('select-planta').value;
   const limites = PLANTAS[tipoPlanta];
@@ -90,10 +102,14 @@ function evaluarEstadoPlanta(humedadActual) {
   }
 }
 
+// ==========================================
+// RENDERING DEL GRÁFICO (CHART.JS)
+// ==========================================
 function renderizarGraficoMultivariable(datosHistoricos) {
   const ctx = document.getElementById('graficoMultivariable').getContext('2d');
 
   const etiquetasHoras = datosHistoricos.map(d => {
+    if (!d.fecha_hora) return '--:--';
     const f = new Date(d.fecha_hora);
     return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
   });
@@ -162,7 +178,9 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   });
 }
 
-// --- EVENTOS INICIALES ---
+// ==========================================
+// EVENTOS Y REFRESH AUTOMÁTICO
+// ==========================================
 document.getElementById('select-planta').addEventListener('change', () => {
   const humedadActual = parseInt(document.getElementById('humedad-suelo').textContent);
   if (!isNaN(humedadActual)) evaluarEstadoPlanta(humedadActual);
@@ -170,8 +188,8 @@ document.getElementById('select-planta').addEventListener('change', () => {
 
 document.getElementById('btn-recargar').addEventListener('click', obtenerMediciones);
 
-// Carga inicial
+// Carga inicial al refrescar
 obtenerMediciones();
 
-// Polling automático
+// Actualización automática cada 60 segundos
 setInterval(obtenerMediciones, 60000);
