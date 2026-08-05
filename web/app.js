@@ -12,7 +12,8 @@ let graficoChart = null;
 const PLANTAS = {
   monstera: { minHumedad: 40, maxHumedad: 80 },
   cactus:   { minHumedad: 15, maxHumedad: 40 },
-  helecho:  { minHumedad: 60, maxHumedad: 90 }
+  helecho:  { minHumedad: 60, maxHumedad: 90 },
+  menta:    { minHumedad: 50, maxHumedad: 85 }
 };
 
 // ==========================================
