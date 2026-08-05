@@ -1,9 +1,11 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-// 1. La URL Base de Supabase (SIN el /rest/v1/mediciones al final)
+// URL base de tu proyecto Supabase
 const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
-const SUPABASE_KEY = "ssb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB"; // Tu clave anon de Supabase
 
-// 2. Inicializamos la ruta directa al Endpoint de la tabla "mediciones"
+// Clave pública (Publishable / Anon Key) corregida
+const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB"; 
+
+// Endpoint REST de la tabla "mediciones"
 const ENDPOINT_MEDICIONES = `${SUPABASE_URL}/rest/v1/mediciones`;
 
 let graficoChart = null;
@@ -31,19 +33,18 @@ async function obtenerMediciones() {
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    // Usamos ENDPOINT_MEDICIONES en lugar de SUPABASE_URL
-    const respuesta = await fetch(`${ENDPOINT_MEDICIONES}?select=*&order=fecha_hora.desc&limit=10`, {
+    const respuesta = await fetch(`${ENDPOINT_MEDICIONES}?select=*&order=created_at.desc&limit=10`, {
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
         "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/json"
       }
     });
 
     if (!respuesta.ok) {
-      const errorDetalle = await respuesta.json();
-      console.error("Detalle de error en Supabase:", errorDetalle);
+      console.error(`Error HTTP Supabase: ${respuesta.status}`);
       throw new Error(`Error HTTP: ${respuesta.status}`);
     }
 
@@ -57,11 +58,13 @@ async function obtenerMediciones() {
     const ultima = datos[0];
     
     // Solapa 1: Actualizar lecturas actuales
-    document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo;
-    document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire;
-    document.getElementById('humedad-aire').textContent = ultima.humedad_aire;
+    document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
+    document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
+    document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
     
-    const fecha = new Date(ultima.fecha_hora);
+    // Compatibilidad con campo de fecha (created_at o fecha_hora)
+    const fechaOrigen = ultima.created_at || ultima.fecha_hora || new Date();
+    const fecha = new Date(fechaOrigen);
     document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
 
     evaluarEstadoPlanta(ultima.humedad_suelo);
@@ -70,7 +73,7 @@ async function obtenerMediciones() {
     renderizarGraficoMultivariable(datos.slice().reverse());
 
   } catch (error) {
-    console.error(error);
+    console.error("Error al obtener mediciones:", error);
     estadoEl.textContent = "ERROR_DE_CONEXION";
   }
 }
@@ -96,7 +99,7 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   const ctx = document.getElementById('graficoMultivariable').getContext('2d');
 
   const etiquetasHoras = datosHistoricos.map(d => {
-    const f = new Date(d.fecha_hora);
+    const f = new Date(d.created_at || d.fecha_hora || new Date());
     return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
   });
 
