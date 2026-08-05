@@ -1,6 +1,10 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-const SUPABASE_URL = " ";
-const SUPABASE_KEY = " "; 
+// 1. Declaramos las credenciales directamente (Son públicas y seguras en Supabase)
+const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co/rest/v1/mediciones";
+const SUPABASE_KEY = "ssb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB"; // Tu clave anon de Supabase
+
+// 2. Inicializamos el cliente de Supabase (si usás la librería cdn)
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
 
