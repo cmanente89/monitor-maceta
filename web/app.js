@@ -30,41 +30,56 @@ async function obtenerMediciones() {
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    // Consulta directa mediante el cliente de Supabase
-    const { data: datos, error } = await supabase
-      .from('mediciones')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10);
+    // Apuntamos con la sintaxis exacta de PostgREST utilizando la columna fecha_hora
+    const urlConsulta = `${ENDPOINT_MEDICIONES}?select=*&order=fecha_hora.desc&limit=10`;
+    
+    const respuesta = await fetch(urlConsulta, {
+      method: "GET",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    });
 
-    if (error) {
-      console.error("Error devuelto por Supabase:", error);
-      throw error;
+    if (!respuesta.ok) {
+      // Si la API devuelve un error 400, leemos el mensaje exacto de Supabase
+      const errorJson = await respuesta.json().catch(() => ({}));
+      console.error("Respuesta de error de Supabase:", errorJson);
+      throw new Error(`Error HTTP ${respuesta.status}: ${JSON.stringify(errorJson)}`);
     }
+
+    const datos = await respuesta.json();
 
     if (!datos || datos.length === 0) {
       estadoEl.textContent = "NO_HAY_DATOS";
       return;
     }
 
-    const ultima = datos[0];
+    // Como pedimos desc (descendente), la primera posición (índice 0) es el registro más reciente
+    const ultima = datos[0]; 
     
-    // Solapa 1: Actualizar lecturas actuales
+    // 1. Cargar lecturas actuales
     document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
     document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
     document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
     
-    const fechaOrigen = ultima.created_at || ultima.fecha_hora || new Date();
-    const fecha = new Date(fechaOrigen);
-    document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
+    // Parsear la fecha usando la columna fecha_hora de tu tabla
+    if (ultima.fecha_hora) {
+      const fecha = new Date(ultima.fecha_hora);
+      document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
+    } else {
+      document.getElementById('fecha-lectura').textContent = '--';
+    }
 
     evaluarEstadoPlanta(ultima.humedad_suelo);
 
-    // Solapa 2: Dibujar gráfico multivariable
+    // 2. Para el gráfico invertimos el arreglo para que quede orden de menor a mayor tiempo (de izquierda a derecha)
     renderizarGraficoMultivariable(datos.slice().reverse());
 
   } catch (error) {
-    console.error("Error en la petición:", error);
+    console.error("Error en obtenerMediciones:", error);
     estadoEl.textContent = "ERROR_DE_CONEXION";
   }
 }
