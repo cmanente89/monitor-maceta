@@ -1,12 +1,9 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-// URL base de tu proyecto Supabase
 const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB";
 
-// Clave pública (Publishable / Anon Key) corregida
-const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB"; 
-
-// Endpoint REST de la tabla "mediciones"
-const ENDPOINT_MEDICIONES = `${SUPABASE_URL}/rest/v1/mediciones`;
+// Inicializamos la conexión usando la librería oficial
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
 
@@ -33,22 +30,17 @@ async function obtenerMediciones() {
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    const respuesta = await fetch(`${ENDPOINT_MEDICIONES}?select=*&order=created_at.desc&limit=10`, {
-      method: "GET",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      }
-    });
+    // Consulta directa mediante el cliente de Supabase
+    const { data: datos, error } = await supabase
+      .from('mediciones')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
 
-    if (!respuesta.ok) {
-      console.error(`Error HTTP Supabase: ${respuesta.status}`);
-      throw new Error(`Error HTTP: ${respuesta.status}`);
+    if (error) {
+      console.error("Error devuelto por Supabase:", error);
+      throw error;
     }
-
-    const datos = await respuesta.json();
 
     if (!datos || datos.length === 0) {
       estadoEl.textContent = "NO_HAY_DATOS";
@@ -62,7 +54,6 @@ async function obtenerMediciones() {
     document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
     document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
     
-    // Compatibilidad con campo de fecha (created_at o fecha_hora)
     const fechaOrigen = ultima.created_at || ultima.fecha_hora || new Date();
     const fecha = new Date(fechaOrigen);
     document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
@@ -73,7 +64,7 @@ async function obtenerMediciones() {
     renderizarGraficoMultivariable(datos.slice().reverse());
 
   } catch (error) {
-    console.error("Error al obtener mediciones:", error);
+    console.error("Error en la petición:", error);
     estadoEl.textContent = "ERROR_DE_CONEXION";
   }
 }
@@ -173,11 +164,10 @@ document.getElementById('select-planta').addEventListener('change', () => {
   if (!isNaN(humedadActual)) evaluarEstadoPlanta(humedadActual);
 });
 
-// Listener para el botón discreto del header
 document.getElementById('btn-recargar').addEventListener('click', obtenerMediciones);
 
-// Carga inicial al abrir la página
+// Carga inicial
 obtenerMediciones();
 
-// Polling automático de fondo cada 60 segundos
+// Polling cada 60s
 setInterval(obtenerMediciones, 60000);
