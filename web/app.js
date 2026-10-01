@@ -13,6 +13,7 @@ const PLANTAS = {
   monstera: { minHumedad: 40, maxHumedad: 80 },
   cactus:   { minHumedad: 15, maxHumedad: 40 },
   helecho:  { minHumedad: 60, maxHumedad: 90 },
+  custom:   { minHumedad: 60, maxHumedad: 11 },
   menta:    { minHumedad: 50, maxHumedad: 85 }
 };
 

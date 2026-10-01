@@ -23,6 +23,7 @@
       <nav class="pestanas-nav">
         <button class="btn-pestana activa" data-tab="tab-actual">> LECTURA_ACTUAL</button>
         <button class="btn-pestana" data-tab="tab-graficos">> TELEMETRIA_GRAFICOS</button>
+        <button class="btn-pestana" data-tab="tab-config">> CONFIGURAR_PLANTA</button>
       </nav>
     </header>
 
@@ -36,6 +37,7 @@
               <option value="cactus">CACTUS</option>
               <option value="helecho">HELECHO</option>
               <option value="menta">MENTA</option>
+              <option value="personalizada">PLANTA PERSONALIZADA</option>
             </select>
           </p>
           <div class="metricas-grid">
@@ -44,6 +46,23 @@
             <p>> HUMEDAD_AIRE: <span id="humedad-aire">--</span>%</p>
           </div>
           <p>> ULTIMA_LECTURA: <span id="fecha-lectura">--</span></p>
+        </div>
+
+        <!-- PANEL DE CARGA MANUAL DE LECTURAS -->
+        <div class="panel-carga">
+          <h3>> INGRESO_MANUAL_LECTURA</h3>
+          <form id="form-medicion-manual">
+            <label for="input-humedad-suelo">Humedad Suelo (%):</label>
+            <input type="number" id="input-humedad-suelo" min="0" max="100" step="0.1" required>
+
+            <label for="input-temp-aire">Temperatura Aire (°C):</label>
+            <input type="number" id="input-temp-aire" step="0.1" required>
+
+            <label for="input-humedad-aire">Humedad Aire (%):</label>
+            <input type="number" id="input-humedad-aire" min="0" max="100" step="0.1" required>
+
+            <button type="submit">[GUARDAR_MEDICION]</button>
+          </form>
         </div>
       </section>
 
@@ -61,12 +80,29 @@
           </div>
         </div>
       </section>
+
+      <!-- SOLAPA 3: CONFIGURACIÓN DE PLANTA PERSONALIZADA -->
+      <section id="tab-config" class="contenido-pestana">
+        <div class="panel-carga">
+          <h3>> CALIBRAR_PLANTA_PERSONALIZADA</h3>
+          <form id="form-planta-custom">
+            <label for="custom-nombre">Nombre de la Especie:</label>
+            <input type="text" id="custom-nombre" placeholder="Ej: Ficus Lyrata" required>
+
+            <label for="custom-min">Humedad Suelo Mínima (%):</label>
+            <input type="number" id="custom-min" min="0" max="100" step="1" required>
+
+            <label for="custom-max">Humedad Suelo Máxima (%):</label>
+            <input type="number" id="custom-max" min="0" max="100" step="1" required>
+
+            <button type="submit">[GUARDAR_CONFIGURACION]</button>
+          </form>
+        </div>
+      </section>
     </main>
   </div>
 
-  <!-- CDN OFICIAL DE SUPABASE JS (OBLIGATORIO Y ÚNICO DEPENDIENTE) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- TU CÓDIGO JS PRINCIPAL -->
   <script src="app.js"></script>
 </body>
 </html>

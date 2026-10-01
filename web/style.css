@@ -231,3 +231,82 @@ body.alerta-emergencia #btn-recargar:hover {
   background-color: #ff3333;
   color: #000000;
 }
+
+/* ==========================================
+   ESTILO TERMINAL RETRO - PANELES DE ENTRADA
+   ========================================== */
+.panel-carga {
+  background-color: #050505;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 1.2rem;
+  margin-top: 1.5rem;
+  font-family: 'VT323', monospace;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.15), 0 0 8px rgba(0, 255, 0, 0.2);
+}
+
+.panel-carga h3 {
+  margin-top: 0;
+  color: #00ff00;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px #00ff00;
+  border-bottom: 1px dashed rgba(0, 255, 0, 0.3);
+  padding-bottom: 0.4rem;
+}
+
+.panel-carga label {
+  display: block;
+  margin-top: 0.8rem;
+  margin-bottom: 0.2rem;
+  color: #00ff00;
+  font-size: 1.15rem;
+  text-shadow: 0 0 2px #00ff00;
+}
+
+/* Campos de texto y número */
+.panel-carga input[type="text"],
+.panel-carga input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #000000;
+  color: #00ff00;
+  border: 1px solid #00aa00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  padding: 0.4rem 0.6rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.panel-carga input[type="text"]:focus,
+.panel-carga input[type="number"]:focus {
+  border-color: #00ff00;
+  box-shadow: 0 0 8px #00ff00;
+}
+
+/* Botón de envío */
+.panel-carga button[type="submit"] {
+  margin-top: 1.2rem;
+  width: 100%;
+  background-color: #000000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s ease-in-out;
+}
+
+.panel-carga button[type="submit"]:hover {
+  background-color: #00ff00;
+  color: #000000;
+  box-shadow: 0 0 12px #00ff00;
+  font-weight: bold;
+}
+
+.panel-carga button[type="submit"]:active {
+  transform: scale(0.98);
+}
