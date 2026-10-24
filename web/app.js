@@ -42,11 +42,11 @@ async function obtenerMediciones() {
 
   try {
     // 1. Consulta de Sensores (Telemetría)
-    const { data: datos, error } = await db
-      .from('telemetry')
-      .select('id, created_at, humedad_suelo, temperatura_aire, humedad_aire')
-      .order('created_at', { ascending: false })
-      .limit(10);
+   const { data: datos, error } = await db
+  .from('mediciones')
+  .select('id, fecha_hora, humedad_suelo, temperatura_aire, humedad_aire')
+  .order('fecha_hora', { ascending: false })
+  .limit(10);
 
     if (error) {
       console.error("Error retornado por Supabase SDK:", error);
@@ -58,13 +58,13 @@ async function obtenerMediciones() {
       document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
       document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
       
-      if (ultima.created_at) {
-        const fecha = new Date(ultima.created_at);
-        document.getElementById('fecha-lectura').textContent = fecha.toLocaleString('es-AR', {
-          day: '2-digit', month: '2-digit', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', second: '2-digit'
-        });
-      }
+      if (ultima.fecha_hora) {
+  const fecha = new Date(ultima.fecha_hora);
+  document.getElementById('fecha-lectura').textContent = fecha.toLocaleString('es-AR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
 
       evaluarEstadoPlanta(ultima.humedad_suelo);
       renderizarGraficoMultivariable(datos.slice().reverse());
