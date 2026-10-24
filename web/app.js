@@ -1,6 +1,11 @@
 // ==========================================
 // INICIALIZACIÓN DE SUPABASE (Usando config.js)
 // ==========================================
+//esto no deberia estar hardcodeado, igual no hay riesgo
+const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB";
+
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
