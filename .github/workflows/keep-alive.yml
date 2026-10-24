@@ -1,0 +1,19 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    # Se ejecuta todos los días a las 12:00 UTC
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Permite probarlo manualmente desde GitHub cuando quieras
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Ping to Supabase API
+        run: |
+          curl -i -X PATCH '${{ secrets.SUPABASE_URL }}/rest/v1/irrigation_control?id=eq.1' \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"updated_at": "now()"}'
