@@ -310,3 +310,65 @@ body.alerta-emergencia #btn-recargar:hover {
 .panel-carga button[type="submit"]:active {
   transform: scale(0.98);
 }
+
+/* ==========================================
+   MEJORAS DE CONTRASTE PARA BOTONES DE CONTROL
+   ========================================== */
+
+/* Botón de Riego Manual */
+#btn-iniciar-riego {
+  background-color: #001100;
+  color: #00ff00 !important;
+  border: 1px solid #00ff00 !important;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+#btn-iniciar-riego:hover:not(:disabled) {
+  background-color: #00ff00;
+  color: #000000 !important;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+#btn-iniciar-riego:disabled {
+  background-color: #111111;
+  color: #555555 !important;
+  border-color: #333333 !important;
+  cursor: not-allowed;
+}
+
+/* Botón de Modo Prueba */
+#btn-toggle-prueba {
+  background-color: #111100;
+  color: #ffff00 !important;
+  border: 1px solid #ffff00 !important;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#btn-toggle-prueba:hover {
+  background-color: #ffff00;
+  color: #000000 !important;
+  box-shadow: 0 0 10px #ffff00;
+}
+
+/* Botón de Reinicio de Planta */
+#btn-reset-planta {
+  background-color: #220000;
+  color: #ff5555 !important;
+  border: 1px solid #ff0000 !important;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+
+#btn-reset-planta:hover {
+  background-color: #ff0000;
+  color: #000000 !important;
+  box-shadow: 0 0 10px #ff0000;
+}
