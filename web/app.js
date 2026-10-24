@@ -176,18 +176,49 @@ document.getElementById('btn-toggle-prueba').addEventListener('click', async () 
 });
 
 // ==========================================
-// RESETEAR HISTORIAL DE PLANTA (PROCEDIMIENTO SQL)
+// RESETEAR HISTORIAL DE PLANTA CON SWEETALERT2
 // ==========================================
-document.getElementById('btn-reset-planta').addEventListener('click', async () => {
-  if (confirm("¿Seguro que querés borrar el historial de lecturas para iniciar una nueva planta?")) {
-    const { error } = await db.rpc('reset_plant_data');
-    if (error) {
-      alert("Error al reiniciar datos: " + error.message);
-    } else {
-      alert("Historial reiniciado con éxito.");
-      obtenerMediciones();
+document.getElementById('btn-reset-planta').addEventListener('click', () => {
+  Swal.fire({
+    title: '> ¿REINICIAR_HISTORIAL?',
+    text: "Se borrarán todas las mediciones para comenzar con una nueva planta.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ff0000',
+    cancelButtonColor: '#333333',
+    confirmButtonText: '[ SÍ, REINICIAR ]',
+    cancelButtonText: '[ CANCELAR ]',
+    background: '#000000',
+    color: '#00ff00',
+    customClass: {
+      popup: 'border-2 border-red-600 font-mono'
     }
-  }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const { error } = await db.rpc('reset_plant_data');
+      
+      if (error) {
+        Swal.fire({
+          title: '> ERROR_BD',
+          text: error.message,
+          icon: 'error',
+          background: '#000000',
+          color: '#ff0000',
+          confirmButtonColor: '#333333'
+        });
+      } else {
+        Swal.fire({
+          title: '> CULTIVO_REINICIADO',
+          text: 'Historial de mediciones vaciado con éxito.',
+          icon: 'success',
+          background: '#000000',
+          color: '#00ff00',
+          confirmButtonColor: '#001100'
+        });
+        obtenerMediciones();
+      }
+    }
+  });
 });
 
 // ==========================================

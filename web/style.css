@@ -372,3 +372,15 @@ body.alerta-emergencia #btn-recargar:hover {
   color: #000000 !important;
   box-shadow: 0 0 10px #ff0000;
 }
+
+/* SweetAlert Retro CRT Style */
+.swal2-popup {
+  font-family: 'VT323', monospace !important;
+  border: 1px solid #00ff00 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2) !important;
+}
+
+.swal2-title {
+  color: #00ff00 !important;
+  letter-spacing: 1px;
+}
