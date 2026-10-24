@@ -16,6 +16,7 @@
       <h1>> MONITOR_MACETA_V1.0</h1>
       <div class="linea-estado">
         <p>ESTADO_DEL_SISTEMA: <span id="estado-sistema">CONECTANDO...</span></p>
+        <p>PLACA_WIFI: <span id="badge-online" class="badge-offline">[OFFLINE]</span></p>
         <button id="btn-recargar" title="Recargar datos">[↻ RECARGAR]</button>
       </div>
       
@@ -23,12 +24,13 @@
       <nav class="pestanas-nav">
         <button class="btn-pestana activa" data-tab="tab-actual">> LECTURA_ACTUAL</button>
         <button class="btn-pestana" data-tab="tab-graficos">> TELEMETRIA_GRAFICOS</button>
+        <button class="btn-pestana" data-tab="tab-prueba">> MODO_PRUEBA</button>
         <button class="btn-pestana" data-tab="tab-config">> CONFIGURAR_PLANTA</button>
       </nav>
     </header>
 
     <main>
-      <!-- SOLAPA 1: DATOS ACTUALES -->
+      <!-- SOLAPA 1: DATOS ACTUALES Y CONTROL DE RIEGO -->
       <section id="tab-actual" class="contenido-pestana activa">
         <div class="panel-datos">
           <p>> PLANTA: 
@@ -37,7 +39,7 @@
               <option value="cactus">CACTUS</option>
               <option value="helecho">HELECHO</option>
               <option value="menta">MENTA</option>
-              <option value="personalizada">PLANTA PERSONALIZADA</option>
+              <option value="custom">PLANTA PERSONALIZADA</option>
             </select>
           </p>
           <div class="metricas-grid">
@@ -45,24 +47,26 @@
             <p>> TEMP_AMBIENTE: <span id="temp-ambiente">--</span>°C</p>
             <p>> HUMEDAD_AIRE: <span id="humedad-aire">--</span>%</p>
           </div>
-          <p>> ULTIMA_LECTURA: <span id="fecha-lectura">--</span></p>
+          <p>> ULTIMA_LECTURA: <span id="fecha-lectura">--/--/---- --:--:--</span></p>
         </div>
 
-        <!-- PANEL DE CARGA MANUAL DE LECTURAS -->
+        <!-- PANEL DE CONTROL DE RIEGO MANUAL (REEMPLAZA A INGRESO MANUAL) -->
         <div class="panel-carga">
-          <h3>> INGRESO_MANUAL_LECTURA</h3>
-          <form id="form-medicion-manual">
-            <label for="input-humedad-suelo">Humedad Suelo (%):</label>
-            <input type="number" id="input-humedad-suelo" min="0" max="100" step="0.1" required>
+          <h3>> CONTROL_DE_RIEGO_MANUAL</h3>
+          <div className="grupo-riego">
+            <label for="select-duracion-riego">Seleccionar Dosis de Agua:</label>
+            <select id="select-duracion-riego" style="width: 100%; padding: 8px; margin-bottom: 15px; background: #000; color: #00ff00; border: 1px solid #00ff00; font-family: 'VT323', monospace; font-size: 1.1rem;">
+              <option value="2">2 Segundos (~90 ml) - Micro Dosis</option>
+              <option value="5" selected>5 Segundos (~225 ml) - Maceta Mediana</option>
+              <option value="8">8 Segundos (~360 ml) - Riego Abundante</option>
+              <option value="10">10 Segundos (~450 ml) - Maceta Grande</option>
+              <option value="15">15 Segundos (~675 ml) - Riego Profundo</option>
+            </select>
 
-            <label for="input-temp-aire">Temperatura Aire (°C):</label>
-            <input type="number" id="input-temp-aire" step="0.1" required>
-
-            <label for="input-humedad-aire">Humedad Aire (%):</label>
-            <input type="number" id="input-humedad-aire" min="0" max="100" step="0.1" required>
-
-            <button type="submit">[GUARDAR_MEDICION]</button>
-          </form>
+            <button id="btn-iniciar-riego" style="width: 100%; padding: 12px; font-weight: bold; cursor: pointer;">
+              [ EJECUTAR_DISPARO_DE_RIEGO ]
+            </button>
+          </div>
         </div>
       </section>
 
@@ -81,7 +85,21 @@
         </div>
       </section>
 
-      <!-- SOLAPA 3: CONFIGURACIÓN DE PLANTA PERSONALIZADA -->
+      <!-- SOLAPA 3: MODO PRUEBA CÍCLICO -->
+      <section id="tab-prueba" class="contenido-pestana">
+        <div class="panel-carga">
+          <h3>> MODO_PRUEBA_CICLICO</h3>
+          <p style="margin-bottom: 15px; font-size: 1.1rem; color: #ffff00;">
+            Al activar este modo, la ESP32 ejecutará un pulso de riego corto (2 segundos) cada 1 minuto de forma automática.
+          </p>
+          <p>> ESTADO_ACTUAL: <span id="estado-modo-prueba" style="font-weight: bold; color: #ffff00;">CONSULTANDO...</span></p>
+          <button id="btn-toggle-prueba" style="margin-top: 15px; padding: 10px 20px;">
+            [ ACTIVAR / DESACTIVAR MODO PRUEBA ]
+          </button>
+        </div>
+      </section>
+
+      <!-- SOLAPA 4: CONFIGURACIÓN Y RESETEO -->
       <section id="tab-config" class="contenido-pestana">
         <div class="panel-carga">
           <h3>> CALIBRAR_PLANTA_PERSONALIZADA</h3>
@@ -97,12 +115,23 @@
 
             <button type="submit">[GUARDAR_CONFIGURACION]</button>
           </form>
+
+          <hr style="border: 1px solid #333; margin: 25px 0;">
+
+          <h3>> CAMBIO_DE_CULTIVO</h3>
+          <p style="margin-bottom: 10px; font-size: 1rem; color: #ff5555;">
+            Limpia el historial de mediciones de la base de datos para comenzar con una nueva planta.
+          </p>
+          <button id="btn-reset-planta" style="background: #330000; color: #ff5555; border: 1px solid #ff0000; padding: 10px; cursor: pointer;">
+            [ REINICIAR_HISTORIAL_DE_PLANTA ]
+          </button>
         </div>
       </section>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

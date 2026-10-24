@@ -1,19 +1,16 @@
 // ==========================================
-// CONFIGURACIÓN DE CREDENCIALES DE SUPABASE
+// INICIALIZACIÓN DE SUPABASE (Usando config.js)
 // ==========================================
-const SUPABASE_URL = "https://dszgiimsmtboczkndblg.supabase.co";
-const SUPABASE_KEY = "sb_publishable_gD9oHAyDE_RDXgb3THEm6w_Z_snNINB";
-
-// Inicializamos la conexión con el SDK Oficial
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let graficoChart = null;
+let esModoPruebaActivo = false;
 
 const PLANTAS = {
   monstera: { minHumedad: 40, maxHumedad: 80 },
   cactus:   { minHumedad: 15, maxHumedad: 40 },
   helecho:  { minHumedad: 60, maxHumedad: 90 },
-  custom:   { minHumedad: 60, maxHumedad: 11 },
+  custom:   { minHumedad: 60, maxHumedad: 80 },
   menta:    { minHumedad: 50, maxHumedad: 85 }
 };
 
@@ -32,51 +29,44 @@ document.querySelectorAll('.btn-pestana').forEach(boton => {
 });
 
 // ==========================================
-// CONSULTA PRINCIPAL A SUPABASE
+// CONSULTA DE SENSORES Y ESTADO DE PLACA
 // ==========================================
 async function obtenerMediciones() {
   const estadoEl = document.getElementById('estado-sistema');
   estadoEl.textContent = "CONSULTANDO_SUPABASE...";
 
   try {
-    // Consulta limpia usando las columnas exactas observadas en la BD:
-    // 'fecha_hora', 'humedad_suelo', 'temperatura_aire', 'humedad_aire'
+    // 1. Consulta de Sensores (Telemetría)
     const { data: datos, error } = await db
-      .from('mediciones')
-      .select('id, fecha_hora, humedad_suelo, temperatura_aire, humedad_aire')
-      .order('fecha_hora', { ascending: false })
+      .from('telemetry')
+      .select('id, created_at, humedad_suelo, temperatura_aire, humedad_aire')
+      .order('created_at', { ascending: false })
       .limit(10);
 
     if (error) {
       console.error("Error retornado por Supabase SDK:", error);
       estadoEl.textContent = "ERROR_BD: " + error.message;
-      return;
+    } else if (datos && datos.length > 0) {
+      const ultima = datos[0]; 
+
+      document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
+      document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
+      document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
+      
+      if (ultima.created_at) {
+        const fecha = new Date(ultima.created_at);
+        document.getElementById('fecha-lectura').textContent = fecha.toLocaleString('es-AR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+      }
+
+      evaluarEstadoPlanta(ultima.humedad_suelo);
+      renderizarGraficoMultivariable(datos.slice().reverse());
     }
 
-    if (!datos || datos.length === 0) {
-      estadoEl.textContent = "NO_HAY_DATOS";
-      return;
-    }
-
-    // El primer elemento [0] es la última lectura registrada
-    const ultima = datos[0]; 
-    
-    // 1. Actualizar interfaz de lectura actual
-    document.getElementById('humedad-suelo').textContent = ultima.humedad_suelo ?? '--';
-    document.getElementById('temp-ambiente').textContent = ultima.temperatura_aire ?? '--';
-    document.getElementById('humedad-aire').textContent = ultima.humedad_aire ?? '--';
-    
-    if (ultima.fecha_hora) {
-      const fecha = new Date(ultima.fecha_hora);
-      document.getElementById('fecha-lectura').textContent = fecha.toLocaleTimeString();
-    } else {
-      document.getElementById('fecha-lectura').textContent = '--';
-    }
-
-    evaluarEstadoPlanta(ultima.humedad_suelo);
-
-    // 2. Renderizar gráfico (invertimos el array para orden cronológico de izq a der)
-    renderizarGraficoMultivariable(datos.slice().reverse());
+    // 2. Consulta de Estado de Placa (Heartbeat / Last Seen)
+    await verificarEstadoPlaca();
 
   } catch (err) {
     console.error("Error inesperado en app.js:", err);
@@ -85,11 +75,122 @@ async function obtenerMediciones() {
 }
 
 // ==========================================
+// VERIFICACIÓN ONLINE / OFFLINE Y CONTROL
+// ==========================================
+async function verificarEstadoPlaca() {
+  const badgeEl = document.getElementById('badge-online');
+  const btnRiego = document.getElementById('btn-iniciar-riego');
+  const estadoPruebaEl = document.getElementById('estado-modo-prueba');
+
+  try {
+    const { data: ctrl, error } = await db
+      .from('irrigation_control')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error || !ctrl) return;
+
+    // Verificar si pasaron menos de 15s desde last_seen
+    const lastSeenMs = ctrl.last_seen ? new Date(ctrl.last_seen).getTime() : 0;
+    const ahoraMs = new Date().getTime();
+    const esOnline = (ahoraMs - lastSeenMs) < 15000;
+
+    if (esOnline) {
+      badgeEl.textContent = "[ONLINE]";
+      badgeEl.style.color = "#00ff00";
+    } else {
+      badgeEl.textContent = "[OFFLINE]";
+      badgeEl.style.color = "#ff0000";
+    }
+
+    // Actualizar botón de riego
+    if (ctrl.manual_trigger) {
+      btnRiego.textContent = "[ REGANDO_AHORA... ]";
+      btnRiego.disabled = true;
+      btnRiego.style.color = "#ffff00";
+      btnRiego.style.borderColor = "#ffff00";
+    } else {
+      btnRiego.textContent = esOnline ? "[ EJECUTAR_DISPARO_DE_RIEGO ]" : "[ PLACA_OFFLINE ]";
+      btnRiego.disabled = !esOnline;
+      btnRiego.style.color = esOnline ? "#00ff00" : "#555555";
+      btnRiego.style.borderColor = esOnline ? "#00ff00" : "#555555";
+    }
+
+    // Actualizar estado de modo prueba
+    esModoPruebaActivo = ctrl.test_mode;
+    estadoPruebaEl.textContent = ctrl.test_mode ? "ACTIVADO (Ciclo 1 min)" : "DESACTIVADO";
+    estadoPruebaEl.style.color = ctrl.test_mode ? "#00ff00" : "#ffff00";
+
+  } catch (err) {
+    console.error("Error leyendo irrigation_control:", err);
+  }
+}
+
+// ==========================================
+// DISPARO DE RIEGO MANUAL
+// ==========================================
+document.getElementById('btn-iniciar-riego').addEventListener('click', async () => {
+  const duracion = parseInt(document.getElementById('select-duracion-riego').value);
+  const btnRiego = document.getElementById('btn-iniciar-riego');
+
+  btnRiego.textContent = "[ ENVIANDO_ORDEN... ]";
+  btnRiego.disabled = true;
+
+  const { error } = await db
+    .from('irrigation_control')
+    .update({
+      manual_trigger: true,
+      duration_seconds: duracion
+    })
+    .eq('id', 1);
+
+  if (error) {
+    alert("Error al enviar la orden de riego: " + error.message);
+  }
+  
+  setTimeout(verificarEstadoPlaca, 1000);
+});
+
+// ==========================================
+// ALTERNAR MODO PRUEBA
+// ==========================================
+document.getElementById('btn-toggle-prueba').addEventListener('click', async () => {
+  const nuevoEstado = !esModoPruebaActivo;
+
+  const { error } = await db
+    .from('irrigation_control')
+    .update({ test_mode: nuevoEstado })
+    .eq('id', 1);
+
+  if (error) {
+    alert("Error al cambiar modo prueba: " + error.message);
+  } else {
+    verificarEstadoPlaca();
+  }
+});
+
+// ==========================================
+// RESETEAR HISTORIAL DE PLANTA (PROCEDIMIENTO SQL)
+// ==========================================
+document.getElementById('btn-reset-planta').addEventListener('click', async () => {
+  if (confirm("¿Seguro que querés borrar el historial de lecturas para iniciar una nueva planta?")) {
+    const { error } = await db.rpc('reset_plant_data');
+    if (error) {
+      alert("Error al reiniciar datos: " + error.message);
+    } else {
+      alert("Historial reiniciado con éxito.");
+      obtenerMediciones();
+    }
+  }
+});
+
+// ==========================================
 // LÓGICA DE ALERTA DE PLANTAS
 // ==========================================
 function evaluarEstadoPlanta(humedadActual) {
   const tipoPlanta = document.getElementById('select-planta').value;
-  const limites = PLANTAS[tipoPlanta];
+  const limites = PLANTAS[tipoPlanta] || PLANTAS.monstera;
   const estadoEl = document.getElementById('estado-sistema');
 
   if (humedadActual < limites.minHumedad) {
@@ -111,8 +212,8 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   const ctx = document.getElementById('graficoMultivariable').getContext('2d');
 
   const etiquetasHoras = datosHistoricos.map(d => {
-    if (!d.fecha_hora) return '--:--';
-    const f = new Date(d.fecha_hora);
+    if (!d.created_at) return '--:--';
+    const f = new Date(d.created_at);
     return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
   });
 
@@ -161,9 +262,7 @@ function renderizarGraficoMultivariable(datosHistoricos) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
+      plugins: { legend: { display: false } },
       scales: {
         x: {
           ticks: { color: '#00ff00', font: { family: 'VT323', size: 14 } },
@@ -193,5 +292,5 @@ document.getElementById('btn-recargar').addEventListener('click', obtenerMedicio
 // Carga inicial al refrescar
 obtenerMediciones();
 
-// Actualización automática cada 60 segundos
-setInterval(obtenerMediciones, 60000);
+// Actualización de estado y datos cada 4 segundos
+setInterval(obtenerMediciones, 4000);
