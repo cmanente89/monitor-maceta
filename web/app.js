@@ -217,10 +217,10 @@ function renderizarGraficoMultivariable(datosHistoricos) {
   const ctx = document.getElementById('graficoMultivariable').getContext('2d');
 
   const etiquetasHoras = datosHistoricos.map(d => {
-    if (!d.created_at) return '--:--';
-    const f = new Date(d.created_at);
-    return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
-  });
+  if (!d.fecha_hora) return '--:--';
+  const f = new Date(d.fecha_hora);
+  return `${f.getHours()}:${f.getMinutes().toString().padStart(2, '0')}`;
+});
 
   const datosSuelo = datosHistoricos.map(d => d.humedad_suelo);
   const datosAire = datosHistoricos.map(d => d.humedad_aire);
