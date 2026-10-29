@@ -384,3 +384,221 @@ body.alerta-emergencia #btn-recargar:hover {
   color: #00ff00 !important;
   letter-spacing: 1px;
 }
+
+
+/* --- ESTILOS BASE RESPONSIVOS --- */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #050505;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.crt-container {
+  width: 100%;
+  max-width: 900px;
+  background: #0a0a0a;
+  border: 2px solid #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de líneas CRT */
+.scanline {
+  width: 100%;
+  height: 100%;
+  height: 2px;
+  background: rgba(0, 255, 0, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Header & Estado */
+header h1 {
+  font-size: 1.8rem;
+  text-shadow: 0 0 8px #00ff00;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.linea-estado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed #00ff00;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+/* Navegación por Pestañas con Scroll Horizontal en Celulares */
+.pestanas-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #1a5f1a;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar barra de scroll fea pero mantener la funcionalidad de deslizar */
+.pestanas-nav::-webkit-scrollbar {
+  height: 4px;
+}
+.pestanas-nav::-webkit-scrollbar-thumb {
+  background: #00ff00;
+}
+
+.btn-pestana {
+  background: #000;
+  color: #00aa00;
+  border: 1px solid #00aa00;
+  padding: 8px 12px;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Evita que los botones se deformen */
+}
+
+.btn-pestana.activa,
+.btn-pestana:hover {
+  color: #00ff00;
+  border-color: #00ff00;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  background: #052205;
+}
+
+/* Contenido de Solapas */
+.contenido-pestana {
+  display: none;
+}
+.contenido-pestana.activa {
+  display: block;
+}
+
+/* Grilla de Métricas en escritorio (2 columnas) */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 15px 0;
+  background: #021102;
+  padding: 12px;
+  border: 1px solid #00aa00;
+}
+
+.destacado {
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+/* Formularios, Selects e Inputs Responsivos */
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  background: #000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  box-sizing: border-box;
+}
+
+button {
+  background: #000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #00ff00;
+  color: #000;
+}
+
+/* Contenedor del Gráfico Adaptable */
+.contenedor-canvas {
+  position: relative;
+  width: 100%;
+  height: 300px; /* Altura controlada para mobile */
+  margin-top: 15px;
+}
+
+/* --- MEDIA QUERIES PARA CELULARES (Pantallas menores a 600px) --- */
+
+@media (max-width: 600px) {
+  body {
+    padding: 0; /* Aprovechar toda la pantalla del teléfono */
+  }
+
+  .crt-container {
+    padding: 12px;
+    border-width: 1px;
+    min-height: 100vh;
+    border-radius: 0;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+  }
+
+  .linea-estado {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 1rem;
+  }
+
+  #btn-recargar {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+  }
+
+  .btn-pestana {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+
+  .metricas-grid {
+    grid-template-columns: 1fr; /* Una sola columna en celular */
+    gap: 8px;
+  }
+
+  .contenedor-canvas {
+    height: 240px; /* Gráfico más compacto para pantallas chicas */
+  }
+
+  .leyenda-grafico {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+  }
+}
